@@ -80,7 +80,7 @@ public class BookManagement extends JFrame {
         StringBuilder result = new StringBuilder();
         for (Book book : books) {
             result.append("ID: ").append(book.id)
-                .append(", Tên: ").append(book.title)
+                .append(", Ngày nhập: ").append(book.getDateImported())
                 .append(", NXB: ").append(book.publisher)
                 .append(", Loại: ").append(book.type)
                 .append(", Đơn giá: ").append(book.unitPrice)
@@ -105,7 +105,7 @@ public class BookManagement extends JFrame {
         for (Book book : books) {
             if (book.type.equalsIgnoreCase("Giáo Khoa") && book.publisher.equalsIgnoreCase("X")) {
                 result.append("ID: ").append(book.id)
-                    .append(", Tên sách: ").append(book.title)
+                    .append(", Ngày nhập: ").append(book.getDateImported())
                     .append(", Đơn giá: ").append(book.unitPrice)
                     .append(", Số lượng: ").append(book.quantity)
                     .append("\n");

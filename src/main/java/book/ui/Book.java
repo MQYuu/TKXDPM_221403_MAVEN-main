@@ -4,7 +4,6 @@ import java.util.Date;
 
 public class Book {
     int id; // Mã sách
-    String title;
     String publisher;
     String type;  // "Giáo Khoa" hoặc "Tham Khảo"
     double unitPrice;
@@ -19,14 +18,6 @@ public class Book {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getPublisher() {
@@ -85,9 +76,8 @@ public class Book {
         this.tax = tax;
     }
 
-    public Book(int id, String title, String publisher, String type, double unitPrice, int quantity, Date dateImported, String status, double tax) {
+    public Book(int id, String publisher, String type, double unitPrice, int quantity, Date dateImported, String status, double tax) {
         this.id = id;
-        this.title = title;
         this.publisher = publisher;
         this.type = type;
         this.unitPrice = unitPrice;

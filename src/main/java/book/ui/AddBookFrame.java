@@ -10,6 +10,7 @@ public class AddBookFrame extends JFrame {
     private BookManagement bookManagement;
 
     public AddBookFrame(BookManagement bookManagement) {
+        
         this.bookManagement = bookManagement;
         setTitle("Thêm Sách");
         setSize(500, 400);
@@ -96,6 +97,7 @@ public class AddBookFrame extends JFrame {
     private Date parseDate(String dateString) throws ParseException {
         return new SimpleDateFormat("dd/MM/yyyy").parse(dateString);
     }
+    
 }
 
 

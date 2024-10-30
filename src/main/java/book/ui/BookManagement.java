@@ -68,7 +68,7 @@ public class BookManagement extends JFrame {
     
     public boolean deleteBook(int id) {
         for (Book book : books) {
-            if (book.id == id) { // Sử dụng thuộc tính id để tìm sách
+            if (book.getId() == id) { // Sử dụng thuộc tính id để tìm sách
                 books.remove(book);
                 return true; // Đã xóa thành công
             }
@@ -79,12 +79,12 @@ public class BookManagement extends JFrame {
     private void printBooks() {
         StringBuilder result = new StringBuilder();
         for (Book book : books) {
-            result.append("ID: ").append(book.id)
+            result.append("ID: ").append(book.getId())
                 .append(", Ngày nhập: ").append(book.getDateImported())
-                .append(", NXB: ").append(book.publisher)
-                .append(", Loại: ").append(book.type)
-                .append(", Đơn giá: ").append(book.unitPrice)
-                .append(", Số lượng: ").append(book.quantity)
+                .append(", NXB: ").append(book.getPublisher())
+                .append(", Loại: ").append(book.getType())
+                .append(", Đơn giá: ").append(book.getUnitPrice())
+                .append(", Số lượng: ").append(book.getQuantity())
                 .append("\n");
         }
         JOptionPane.showMessageDialog(this, result.toString());
@@ -103,11 +103,11 @@ public class BookManagement extends JFrame {
     private void displayPublisherXBooks() {
         StringBuilder result = new StringBuilder();
         for (Book book : books) {
-            if (book.type.equalsIgnoreCase("Giáo Khoa") && book.publisher.equalsIgnoreCase("X")) {
-                result.append("ID: ").append(book.id)
+            if (book.getType().equalsIgnoreCase("Giáo Khoa") && book.getPublisher().equalsIgnoreCase("X")) {
+                result.append("ID: ").append(book.getId())
                     .append(", Ngày nhập: ").append(book.getDateImported())
-                    .append(", Đơn giá: ").append(book.unitPrice)
-                    .append(", Số lượng: ").append(book.quantity)
+                    .append(", Đơn giá: ").append(book.getUnitPrice())
+                    .append(", Số lượng: ").append(book.getQuantity())
                     .append("\n");
             }
         }

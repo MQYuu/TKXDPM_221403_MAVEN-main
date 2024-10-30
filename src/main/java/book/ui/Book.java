@@ -3,14 +3,25 @@ package book.ui;
 import java.util.Date;
 
 public class Book {
-    int id; // Mã sách
-    String publisher;
-    String type;  // "Giáo Khoa" hoặc "Tham Khảo"
-    double unitPrice;
-    int quantity;
-    Date dateImported; // Ngày nhập
-    String status; // Tình trạng (chỉ cho sách giáo khoa)
-    double tax; // Thuế (chỉ cho sách tham khảo)
+    private int id; // Mã sách
+    private String publisher;
+    private String type;  // "Giáo Khoa" hoặc "Tham Khảo"
+    private double unitPrice;
+    private int quantity;
+    private Date dateImported; // Ngày nhập
+    private String status; // Tình trạng (chỉ cho sách giáo khoa)
+    private double tax; // Thuế (chỉ cho sách tham khảo)
+
+    public Book(int id, String publisher, String type, String type2, double unitPrice, int quantity, Date dateImported, String status, double tax) {
+        this.id = id;
+        this.publisher = publisher;
+        this.type = type;
+        this.unitPrice = unitPrice;
+        this.quantity = quantity;
+        this.dateImported = dateImported;
+        this.status = status;
+        this.tax = tax;
+    }
 
     public int getId() {
         return id;
@@ -73,17 +84,6 @@ public class Book {
     }
 
     public void setTax(double tax) {
-        this.tax = tax;
-    }
-
-    public Book(int id, String publisher, String type, double unitPrice, int quantity, Date dateImported, String status, double tax) {
-        this.id = id;
-        this.publisher = publisher;
-        this.type = type;
-        this.unitPrice = unitPrice;
-        this.quantity = quantity;
-        this.dateImported = dateImported;
-        this.status = status;
         this.tax = tax;
     }
 

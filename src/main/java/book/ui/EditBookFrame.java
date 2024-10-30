@@ -33,16 +33,16 @@ public class EditBookFrame extends JFrame {
                 Book bookToEdit = findBookById(id);
 
                 if (bookToEdit != null) {
-                    bookToEdit.dateImported = parseDate(txtDate.getText());
-                    bookToEdit.unitPrice = Double.parseDouble(txtUnitPrice.getText());
-                    bookToEdit.quantity = Integer.parseInt(txtQuantity.getText());
-                    bookToEdit.publisher = txtPublisher.getText();
+                    bookToEdit.setDateImported(parseDate(txtDate.getText()));
+                    bookToEdit.setUnitPrice(Double.parseDouble(txtUnitPrice.getText()));
+                    bookToEdit.setQuantity(Integer.parseInt(txtQuantity.getText()));
+                    bookToEdit.setPublisher(txtPublisher.getText());
                     
                     // Cập nhật thông tin cho sách giáo khoa hoặc sách tham khảo
-                    if (bookToEdit.type.equals("Giáo Khoa")) {
-                        bookToEdit.status = txtStatus.getText();
-                    } else if (bookToEdit.type.equals("Tham Khảo")) {
-                        bookToEdit.tax = Double.parseDouble(txtTax.getText());
+                    if (bookToEdit.getType().equals("Giáo Khoa")) {
+                        bookToEdit.setStatus(txtStatus.getText());
+                    } else if (bookToEdit.getType().equals("Tham Khảo")) {
+                        bookToEdit.setTax(Double.parseDouble(txtTax.getText()));
                     }
 
                     JOptionPane.showMessageDialog(this, "Đã sửa sách thành công.");
@@ -62,18 +62,18 @@ public class EditBookFrame extends JFrame {
             int id = Integer.parseInt(txtId.getText());
             Book book = findBookById(id);
             if (book != null) {
-                txtDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(book.dateImported));
-                txtUnitPrice.setText(String.valueOf(book.unitPrice));
-                txtQuantity.setText(String.valueOf(book.quantity));
-                txtPublisher.setText(book.publisher);
-                cbType.setSelectedItem(book.type);
-                if (book.type.equals("Giáo Khoa")) {
-                    txtStatus.setText(book.status);
+                txtDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(book.getDateImported()));
+                txtUnitPrice.setText(String.valueOf(book.getUnitPrice()));
+                txtQuantity.setText(String.valueOf(book.getQuantity()));
+                txtPublisher.setText(book.getPublisher());
+                cbType.setSelectedItem(book.getType());
+                if (book.getType().equals("Giáo Khoa")) {
+                    txtStatus.setText(book.getStatus());
                     txtTax.setVisible(false); // Ẩn thuế
                     add(new JLabel("Tình trạng:"));
                     add(txtStatus);
                 } else {
-                    txtTax.setText(String.valueOf(book.tax));
+                    txtTax.setText(String.valueOf(book.getTax()));
                     txtStatus.setVisible(false); // Ẩn tình trạng
                     add(new JLabel("Thuế:"));
                     add(txtTax);
@@ -101,7 +101,7 @@ public class EditBookFrame extends JFrame {
 
     private Book findBookById(int id) {
         for (Book book : bookManagement.getBooks()) {
-            if (book.id == id) {
+            if (book.getId() == id) {
                 return book;
             }
         }

@@ -3,8 +3,7 @@ package book.ui;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-
-
+import book.entity.BookCalculator;
 
 public class BookManagement extends JFrame {
     private ArrayList<Book> books = new ArrayList<>();
@@ -51,7 +50,6 @@ public class BookManagement extends JFrame {
         btnAdd.addActionListener(e -> new AddBookFrame(this).setVisible(true));
         btnEdit.addActionListener(e -> new EditBookFrame(this).setVisible(true));
         btnDelete.addActionListener(e -> new DeleteBookFrame(this).setVisible(true));
-       // btnSearch.addActionListener(e -> new SearchBookFrame(this).setVisible(true));
         btnPrint.addActionListener(e -> printBooks());
         btnTotalPrice.addActionListener(e -> calculateTotalPrice());
         btnAvgPrice.addActionListener(e -> calculateAveragePrice());
@@ -77,46 +75,28 @@ public class BookManagement extends JFrame {
         }
         return false; // Không tìm thấy sách
     }
-    
 
     private void printBooks() {
         StringBuilder result = new StringBuilder();
         for (Book book : books) {
             result.append("ID: ").append(book.id)
-                  .append(", Tên: ").append(book.title)
-                  .append(", NXB: ").append(book.publisher)
-                  .append(", Loại: ").append(book.type)
-                  .append(", Đơn giá: ").append(book.unitPrice)
-                  .append(", Số lượng: ").append(book.quantity)
-                  .append("\n");
+                .append(", Tên: ").append(book.title)
+                .append(", NXB: ").append(book.publisher)
+                .append(", Loại: ").append(book.type)
+                .append(", Đơn giá: ").append(book.unitPrice)
+                .append(", Số lượng: ").append(book.quantity)
+                .append("\n");
         }
         JOptionPane.showMessageDialog(this, result.toString());
     }
 
     private void calculateTotalPrice() {
-        double totalTextbookPrice = 0;
-        double totalReferencePrice = 0;
-        for (Book book : books) {
-            if (book.type.equalsIgnoreCase("Giáo Khoa")) {
-                totalTextbookPrice += book.getTotalPrice();
-            } else if (book.type.equalsIgnoreCase("Tham Khảo")) {
-                totalReferencePrice += book.getTotalPrice();
-            }
-        }
-        JOptionPane.showMessageDialog(this, "Tổng thành tiền sách Giáo Khoa: " + totalTextbookPrice +
-                "\nTổng thành tiền sách Tham Khảo: " + totalReferencePrice);
+        double total = BookCalculator.calculateTotalPriceForAllBooks(books);
+        JOptionPane.showMessageDialog(this, "Tổng thành tiền tất cả sách: " + total);
     }
 
     private void calculateAveragePrice() {
-        double totalReferencePrice = 0;
-        int countReference = 0;
-        for (Book book : books) {
-            if (book.type.equalsIgnoreCase("Tham Khảo")) {
-                totalReferencePrice += book.unitPrice;
-                countReference++;
-            }
-        }
-        double averagePrice = countReference > 0 ? totalReferencePrice / countReference : 0;
+        double averagePrice = BookCalculator.calculateAveragePriceForReferenceBooks(books);
         JOptionPane.showMessageDialog(this, "Trung bình đơn giá sách Tham Khảo: " + averagePrice);
     }
 
@@ -125,14 +105,12 @@ public class BookManagement extends JFrame {
         for (Book book : books) {
             if (book.type.equalsIgnoreCase("Giáo Khoa") && book.publisher.equalsIgnoreCase("X")) {
                 result.append("ID: ").append(book.id)
-                      .append(", Tên sách: ").append(book.title)
-                      .append(", Đơn giá: ").append(book.unitPrice)
-                      .append(", Số lượng: ").append(book.quantity)
-                      .append("\n");
+                    .append(", Tên sách: ").append(book.title)
+                    .append(", Đơn giá: ").append(book.unitPrice)
+                    .append(", Số lượng: ").append(book.quantity)
+                    .append("\n");
             }
         }
         JOptionPane.showMessageDialog(this, result.length() > 0 ? result.toString() : "Không có sách giáo khoa của NXB X.");
     }
-    
 }
-

@@ -3,7 +3,9 @@ package book.ui;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import book.entity.BookCalculator;
+import book.entity.AverageBook;
+import book.entity.TotalBook;
+import book.ui.SearchBookFrame;
 
 public class BookManagement extends JFrame {
     private ArrayList<Book> books = new ArrayList<>();
@@ -50,12 +52,18 @@ public class BookManagement extends JFrame {
         btnAdd.addActionListener(e -> new AddBookFrame(this).setVisible(true));
         btnEdit.addActionListener(e -> new EditBookFrame(this).setVisible(true));
         btnDelete.addActionListener(e -> new DeleteBookFrame(this).setVisible(true));
+        btnSearch.addActionListener(e -> SearchBookFrame(this).setVisible(true));
         btnPrint.addActionListener(e -> printBooks());
         btnTotalPrice.addActionListener(e -> calculateTotalPrice());
         btnAvgPrice.addActionListener(e -> calculateAveragePrice());
         btnPublisherX.addActionListener(e -> displayPublisherXBooks());
 
         add(panel);
+    }
+
+    public Window SearchBookFrame(BookManagement bookManagement) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'SearchBookFrame'");
     }
 
     public ArrayList<Book> getBooks() {
@@ -91,12 +99,12 @@ public class BookManagement extends JFrame {
     }
 
     private void calculateTotalPrice() {
-        double total = BookCalculator.calculateTotalPriceForAllBooks(books);
+        double total = TotalBook.calculateTotalPriceForAllBooks(books);
         JOptionPane.showMessageDialog(this, "Tổng thành tiền tất cả sách: " + total);
     }
 
     private void calculateAveragePrice() {
-        double averagePrice = BookCalculator.calculateAveragePriceForReferenceBooks(books);
+        double averagePrice = AverageBook.calculateAveragePriceForReferenceBooks(books);
         JOptionPane.showMessageDialog(this, "Trung bình đơn giá sách Tham Khảo: " + averagePrice);
     }
 

@@ -11,6 +11,10 @@ public class BookSearch {
         this.books = books;
     }
 
+    public BookSearch(BookUsecase bookUsecase) {
+        //TODO Auto-generated constructor stub
+    }
+
     public Book findBookById(int id) {
         for (Book book : books) {
             if (book.getId() == id) {
@@ -20,3 +24,5 @@ public class BookSearch {
         return null; // Trả về null nếu không tìm thấy sách
     }
 }
+    
+    

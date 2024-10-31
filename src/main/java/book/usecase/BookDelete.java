@@ -1,13 +1,7 @@
 package book.usecase;
 
-public class BookDelete {
-    private BookUsecase bookUsecase;
-
-    public BookDelete(BookUsecase bookUsecase) {
-        this.bookUsecase = bookUsecase;
-    }
-
-    public void execute(String bookId) {
-        bookUsecase.deleteBook(bookId);
+class BookDelete {
+    public void deleteBook(int bookId) {
+        // Logic to delete book by ID
     }
 }

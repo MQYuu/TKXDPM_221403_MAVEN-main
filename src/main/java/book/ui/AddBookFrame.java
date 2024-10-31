@@ -99,5 +99,3 @@ public class AddBookFrame extends JFrame {
     }
     
 }
-
-

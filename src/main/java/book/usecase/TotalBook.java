@@ -1,9 +1,12 @@
 package book.usecase;
 
-public class TotalBook {
+import java.util.List;
 
-    public TotalBook(BookUsecase bookUsecase) {
-        //TODO Auto-generated constructor stub
+import book.ui.Book;
+
+class TotalBook {
+    public int getTotal(List<Book> books) {
+        // logic
+        return 0;
     }
-
 }

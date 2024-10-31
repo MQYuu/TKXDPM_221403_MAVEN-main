@@ -1,28 +1,32 @@
 package book.usecase;
 
 import java.util.ArrayList;
-
 import book.ui.Book;
+import java.util.List;
 
-public class BookSearch {
-    private ArrayList<Book> books;
+class BookSearch {
+    private List<Book> books;
 
-    public BookSearch(ArrayList<Book> books) {
+    public BookSearch(List<Book> books) {
         this.books = books;
     }
 
-    public BookSearch(BookUsecase bookUsecase) {
-        //TODO Auto-generated constructor stub
+    public List<Book> bookSearch(String query) {
+        List<Book> results = new ArrayList<>();
+        // Logic to search books by query
+        return results;
     }
 
     public Book findBookById(int id) {
-        for (Book book : books) {
-            if (book.getId() == id) {
-                return book; // Trả về sách nếu tìm thấy
+            for (Book book : books) {
+        if (book.getId() == id) {
+            return book; // Trả về sách nếu tìm thấy
             }
         }
-        return null; // Trả về null nếu không tìm thấy sách
+        return null;
     }
 }
+
+
     
     

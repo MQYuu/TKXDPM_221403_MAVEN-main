@@ -5,7 +5,7 @@ import java.util.List;
 
 import book.ui.Book;
 
-public class BookUsecase {
+class BookUsecase {
     private List<Book> books;
     private BookAdd bookAdd;
     private BookEdit bookEdit;
@@ -18,18 +18,15 @@ public class BookUsecase {
 
     public BookUsecase() {
         this.books = new ArrayList<>();
-        this.bookAdd = new BookAdd(this);
-        this.bookEdit = new BookEdit(this);
-        this.bookDelete = new BookDelete(this);
-        this.bookSearch = new BookSearch(this);
-        this.bookPrint = new BookPrint(this, null);
-        this.totalBook = new TotalBook(this);
-        this.averageBook = new AverageBook(this);
-        this.exportBook = new ExportBook(this);
+        this.bookAdd = new BookAdd();
+        this.bookEdit = new BookEdit();
+        this.bookDelete = new BookDelete();
+        this.bookSearch = new BookSearch(books);
+        this.bookPrint = new BookPrint();
+        this.totalBook = new TotalBook();
+        this.averageBook = new AverageBook();
+        this.exportBook = new ExportBook();
     }
 
-    public Book findBookById(int bookId) {
-        return bookSearch.findBookById(bookId);
-    }
+    // Implement other methods to use the various services, like addBook, deleteBook, etc.
 }
-

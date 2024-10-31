@@ -1,15 +1,11 @@
 package book.usecase;
 
-public class ExportBook {
-    private BookUsecase bookUsecase;
+import java.util.List;
 
-    public ExportBook(BookUsecase bookUsecase) {
-        this.bookUsecase = bookUsecase;
-    }
+import book.ui.Book;
 
-    public void execute(String filePath) {
-        // Thêm mã để xuất sách ra file
-        // Ví dụ: xuất danh sách sách sang file CSV hoặc bất kỳ định dạng nào khác
+class ExportBook {
+    public void export(List<Book> books) {
+        // Logic to export books
     }
 }
-

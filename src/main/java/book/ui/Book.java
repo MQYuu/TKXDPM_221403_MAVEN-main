@@ -11,6 +11,7 @@ public class Book {
         private Date dateImported; // Ngày nhập
         private String status; // Tình trạng (chỉ cho sách giáo khoa)
         private double tax; // Thuế (chỉ cho sách tham khảo)
+        public String get;
 
     public Book(int id, String publisher, String type, String type2, double unitPrice, int quantity, Date dateImported, String status, double tax) {
         this.id = id;

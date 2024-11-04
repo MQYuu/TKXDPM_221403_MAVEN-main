@@ -5,6 +5,7 @@ import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import book.database.BookDatabase;
 
 public class EditBookFrame extends JFrame {
     private BookManagement bookManagement;
@@ -14,7 +15,7 @@ public class EditBookFrame extends JFrame {
         setTitle("Sửa Sách");
         setSize(500, 400);
         setLocationRelativeTo(null);
-        setLayout(new GridLayout(9, 2, 10, 10));
+        setLayout(new GridLayout(10, 2, 10, 10)); // Tăng số hàng lên 10 để đủ chỗ cho mọi trường
 
         JTextField txtId = new JTextField();
         JTextField txtDate = new JTextField(); // Ngày nhập
@@ -33,7 +34,7 @@ public class EditBookFrame extends JFrame {
                 Book bookToEdit = findBookById(id);
 
                 if (bookToEdit != null) {
-                    bookToEdit.setDateImported(parseDate(txtDate.getText()));
+                    bookToEdit.setDateImported(parseDate(txtDate.getText())); // Sử dụng java.sql.Date
                     bookToEdit.setUnitPrice(Double.parseDouble(txtUnitPrice.getText()));
                     bookToEdit.setQuantity(Integer.parseInt(txtQuantity.getText()));
                     bookToEdit.setPublisher(txtPublisher.getText());
@@ -44,6 +45,9 @@ public class EditBookFrame extends JFrame {
                     } else if (bookToEdit.getType().equals("Tham Khảo")) {
                         bookToEdit.setTax(Double.parseDouble(txtTax.getText()));
                     }
+
+                    // Cập nhật sách trong cơ sở dữ liệu
+                    bookManagement.updateBook(bookToEdit); // Giả sử bạn đã tạo phương thức này trong BookManagement
 
                     JOptionPane.showMessageDialog(this, "Đã sửa sách thành công.");
                     dispose();
@@ -59,27 +63,32 @@ public class EditBookFrame extends JFrame {
 
         // Tìm kiếm thông tin sách theo ID
         txtId.addActionListener(e -> {
-            int id = Integer.parseInt(txtId.getText());
-            Book book = findBookById(id);
-            if (book != null) {
-                txtDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(book.getDateImported()));
-                txtUnitPrice.setText(String.valueOf(book.getUnitPrice()));
-                txtQuantity.setText(String.valueOf(book.getQuantity()));
-                txtPublisher.setText(book.getPublisher());
-                cbType.setSelectedItem(book.getType());
-                if (book.getType().equals("Giáo Khoa")) {
-                    txtStatus.setText(book.getStatus());
-                    txtTax.setVisible(false); // Ẩn thuế
-                    add(new JLabel("Tình trạng:"));
-                    add(txtStatus);
+            int id;
+            try {
+                id = Integer.parseInt(txtId.getText());
+                Book book = BookDatabase.getBookById(id); // Gọi phương thức để lấy sách theo ID từ database
+                if (book != null) {
+                    txtDate.setText(new SimpleDateFormat("dd/MM/yyyy").format(book.getDateImported()));
+                    txtUnitPrice.setText(String.valueOf(book.getUnitPrice()));
+                    txtQuantity.setText(String.valueOf(book.getQuantity()));
+                    txtPublisher.setText(book.getPublisher());
+                    cbType.setSelectedItem(book.getType());
+
+                    // Hiển thị thông tin tùy thuộc vào loại sách
+                    if (book.getType().equals("Giáo Khoa")) {
+                        txtStatus.setText(book.getStatus());
+                        txtStatus.setVisible(true);
+                        txtTax.setVisible(false); // Ẩn thuế
+                    } else {
+                        txtTax.setText(String.valueOf(book.getTax()));
+                        txtTax.setVisible(true);
+                        txtStatus.setVisible(false); // Ẩn tình trạng
+                    }
                 } else {
-                    txtTax.setText(String.valueOf(book.getTax()));
-                    txtStatus.setVisible(false); // Ẩn tình trạng
-                    add(new JLabel("Thuế:"));
-                    add(txtTax);
+                    JOptionPane.showMessageDialog(this, "Không tìm thấy sách với ID: " + id);
                 }
-            } else {
-                JOptionPane.showMessageDialog(this, "Không tìm thấy sách với ID: " + id);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Vui lòng nhập ID hợp lệ.");
             }
         });
 
@@ -96,7 +105,15 @@ public class EditBookFrame extends JFrame {
         add(txtPublisher);
         add(new JLabel("Loại sách:"));
         add(cbType);
+        add(new JLabel("Tình trạng (nếu là sách giáo khoa):"));
+        add(txtStatus);
+        add(new JLabel("Thuế (nếu là sách tham khảo):"));
+        add(txtTax);
         add(btnEdit);
+
+        // Ẩn các trường không cần thiết ban đầu
+        txtStatus.setVisible(false);
+        txtTax.setVisible(false);
     }
 
     private Book findBookById(int id) {

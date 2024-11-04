@@ -1,14 +1,18 @@
 package book.ui;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
+
+import book.database.BookDatabase;
 import book.entity.AverageBook;
 import book.entity.TotalBook;
-import book.ui.SearchBookFrame;
 
 public class BookManagement extends JFrame {
     private ArrayList<Book> books = new ArrayList<>();
+    private JTable bookTable;
+    private DefaultTableModel tableModel;
 
     public BookManagement() {
         setTitle("Quản lý sách");
@@ -59,20 +63,91 @@ public class BookManagement extends JFrame {
         btnPublisherX.addActionListener(e -> displayPublisherXBooks());
 
         add(panel);
+
+        String[] columnNames = {"ID", "Ngày nhập", "NXB", "Loại", "Đơn giá", "Số lượng", "Tình trạng", "Thuế"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        bookTable = new JTable(tableModel);
+        
+        // Đặt bảng vào bên trong JScrollPane
+        JScrollPane scrollPane = new JScrollPane(bookTable);
+        scrollPane.setPreferredSize(new Dimension(750, 300));
+
+        // Thêm bảng và panel nút vào form
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+        getContentPane().add(panel, BorderLayout.SOUTH);
+
+        loadBooksFromDatabase();
     }
 
-    public Window SearchBookFrame(BookManagement bookManagement) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'SearchBookFrame'");
+       private void loadBooksFromDatabase() {
+        books = BookDatabase.getAllBooks(); // Lấy dữ liệu từ cơ sở dữ liệu
+        updateTable();
     }
 
+    private void updateTable() {
+        tableModel.setRowCount(0); // Xóa các hàng cũ trong bảng
+        for (Book book : books) {
+            Object[] rowData = {
+                book.getId(),
+                book.getDateImported(),
+                book.getPublisher(),
+                book.getType(),
+                book.getUnitPrice(),
+                book.getQuantity(),
+                book.getStatus(),
+                book.getTax()
+            };
+            tableModel.addRow(rowData);
+        }
+    }
+
+    public void updateBook(Book book) {
+        BookDatabase.updateBookInDatabase(book); // Phương thức cập nhật trong BookDatabase
+    }
+    
     public ArrayList<Book> getBooks() {
         return books;
     }
 
     public void addBook(Book book) {
-        books.add(book);
+        if (BookDatabase.insertBook(book)) {
+            books.add(book);
+            Object[] rowData = {
+                book.getId(),
+                book.getDateImported(),
+                book.getPublisher(),
+                book.getType(),
+                book.getUnitPrice(),
+                book.getQuantity(),
+                book.getStatus(),
+                book.getTax()
+            };
+            tableModel.addRow(rowData);
+            JOptionPane.showMessageDialog(this, "Đã thêm sách vào cơ sở dữ liệu thành công.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Không thể thêm sách vào cơ sở dữ liệu.");
+        }
     }
+
+    public void deleteBook() {
+        int selectedRow = bookTable.getSelectedRow();
+        if (selectedRow >= 0) {
+            int bookId = (int) tableModel.getValueAt(selectedRow, 0);
+            books.removeIf(book -> book.getId() == bookId);
+            tableModel.removeRow(selectedRow);
+        } else {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn một sách để xóa.");
+        }
+    }
+    
+    public Window SearchBookFrame(BookManagement bookManagement) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'SearchBookFrame'");
+    }
+
+    // public void addBook(Book book) {
+    //     books.add(book);
+    // }
     
     public boolean deleteBook(int id) {
         for (Book book : books) {

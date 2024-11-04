@@ -13,16 +13,17 @@ public class Book {
         private double tax; // Thuế (chỉ cho sách tham khảo)
         public String get;
 
-    public Book(int id, String publisher, String type, String type2, double unitPrice, int quantity, Date dateImported, String status, double tax) {
-        this.id = id;
-        this.publisher = publisher;
-        this.type = type;
-        this.unitPrice = unitPrice;
-        this.quantity = quantity;
-        this.dateImported = dateImported;
-        this.status = status;
-        this.tax = tax;
-    }
+        public Book(int id, String publisher, String type, double unitPrice, int quantity, Date dateImported, String status, double tax) {
+            this.id = id;
+            this.publisher = publisher;
+            this.type = type;
+            this.unitPrice = unitPrice;
+            this.quantity = quantity;
+            this.dateImported = dateImported;
+            this.status = status;
+            this.tax = tax;
+        }
+         
 
     public int getId() {
         return id;

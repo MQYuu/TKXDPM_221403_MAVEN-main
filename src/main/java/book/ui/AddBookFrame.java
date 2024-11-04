@@ -2,21 +2,21 @@ package book.ui;
 
 import javax.swing.*;
 import java.awt.*;
+import java.sql.Date; // Sử dụng java.sql.Date
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class AddBookFrame extends JFrame {
     private BookManagement bookManagement;
 
     public AddBookFrame(BookManagement bookManagement) {
-        
         this.bookManagement = bookManagement;
         setTitle("Thêm Sách");
         setSize(500, 400);
         setLocationRelativeTo(null);
         setLayout(new GridLayout(9, 2, 10, 10));
 
+        // Tạo các trường nhập dữ liệu
         JTextField txtId = new JTextField();
         JTextField txtDate = new JTextField(); // Ngày nhập
         JTextField txtUnitPrice = new JTextField();
@@ -27,30 +27,25 @@ public class AddBookFrame extends JFrame {
         JComboBox<String> cbType = new JComboBox<>(new String[]{"Giáo Khoa", "Tham Khảo"});
         JButton btnAdd = new JButton("Thêm");
 
-        // Thiết lập sự kiện cho nút Thêm
+        // Xử lý sự kiện cho nút Thêm
         btnAdd.addActionListener(e -> {
             try {
                 int id = Integer.parseInt(txtId.getText());
                 String dateString = txtDate.getText();
-                Date dateImported = parseDate(dateString);
+                Date dateImported = new Date(parseDate(dateString).getTime()); // Chuyển đổi sang java.sql.Date
                 double unitPrice = Double.parseDouble(txtUnitPrice.getText());
                 int quantity = Integer.parseInt(txtQuantity.getText());
                 String publisher = txtPublisher.getText();
                 String type = cbType.getSelectedItem().toString();
-                String status = "";
-                double tax = 0.0;
+                String status = type.equals("Giáo Khoa") ? txtStatus.getText() : "";
+                double tax = type.equals("Tham Khảo") ? Double.parseDouble(txtTax.getText()) : 0.0;
 
-                // Xử lý thêm sách giáo khoa hoặc sách tham khảo
-                if (type.equals("Giáo Khoa")) {
-                    status = txtStatus.getText();
-                    bookManagement.addBook(new Book(id, "", publisher, type, unitPrice, quantity, dateImported, status, tax));
-                } else if (type.equals("Tham Khảo")) {
-                    tax = Double.parseDouble(txtTax.getText());
-                    bookManagement.addBook(new Book(id, "", publisher, type, unitPrice, quantity, dateImported, status, tax));
-                }
+                // Tạo đối tượng Book và thêm vào BookManagement
+                Book newBook = new Book(id, publisher, type, unitPrice, quantity, dateImported, status, tax);
+                bookManagement.addBook(newBook);
 
-                JOptionPane.showMessageDialog(this, "Đã thêm sách thành công.");
-                dispose();
+                //JOptionPane.showMessageDialog(this, "Đã thêm sách thành công.");
+                dispose(); // Đóng form sau khi thêm sách
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập thông tin hợp lệ.");
             } catch (ParseException ex) {
@@ -78,24 +73,21 @@ public class AddBookFrame extends JFrame {
         add(new JLabel("Thuế (nếu là sách tham khảo):"));
         add(txtTax);
         
-        // Thay đổi khả năng hiển thị các trường này theo loại sách
+        // Thay đổi khả năng hiển thị các trường tình trạng và thuế dựa trên loại sách
+        txtStatus.setVisible(false);
+        txtTax.setVisible(false);
+        
         cbType.addActionListener(e -> {
             String selectedType = cbType.getSelectedItem().toString();
-            if (selectedType.equals("Giáo Khoa")) {
-                txtStatus.setVisible(true);
-                txtTax.setVisible(false);
-            } else {
-                txtStatus.setVisible(false);
-                txtTax.setVisible(true);
-            }
+            txtStatus.setVisible(selectedType.equals("Giáo Khoa"));
+            txtTax.setVisible(selectedType.equals("Tham Khảo"));
         });
-        
+
         // Nút Thêm
         add(btnAdd);
     }
 
-    private Date parseDate(String dateString) throws ParseException {
+    private java.util.Date parseDate(String dateString) throws ParseException {
         return new SimpleDateFormat("dd/MM/yyyy").parse(dateString);
     }
-    
 }

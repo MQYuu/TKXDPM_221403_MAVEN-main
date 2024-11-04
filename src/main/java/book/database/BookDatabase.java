@@ -116,6 +116,19 @@ public class BookDatabase {
         return null; // Không tìm thấy sách
     }
     
-    
-    
+    public static boolean deleteBook(int id) {
+        String query = "DELETE FROM books WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, id);
+            int rowsDeleted = pstmt.executeUpdate();
+            return rowsDeleted > 0; // Trả về true nếu đã xóa thành công
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false; // Trả về false nếu có lỗi xảy ra
+        }
+    }
 }

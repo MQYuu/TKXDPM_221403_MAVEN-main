@@ -53,9 +53,18 @@ public class BookManagement extends JFrame {
         gbc.gridy = 3;
         panel.add(btnPublisherX, gbc);
 
-        btnAdd.addActionListener(e -> new AddBookFrame(this).setVisible(true));
-        btnEdit.addActionListener(e -> new EditBookFrame(this).setVisible(true));
-        btnDelete.addActionListener(e -> new DeleteBookFrame(this).setVisible(true));
+        btnAdd.addActionListener(e -> {
+            new AddBookFrame(this).setVisible(true);
+            loadBooksFromDatabase(); // Tải lại dữ liệu sau khi thêm
+        });
+        btnEdit.addActionListener(e -> {
+            new EditBookFrame(this).setVisible(true);
+            loadBooksFromDatabase(); // Tải lại dữ liệu sau khi sửa
+        });
+        btnDelete.addActionListener(e -> {
+            new DeleteBookFrame(this).setVisible(true);
+            loadBooksFromDatabase(); // Tải lại dữ liệu sau khi xóa
+        });
         btnSearch.addActionListener(e -> SearchBookFrame(this).setVisible(true));
         btnPrint.addActionListener(e -> printBooks());
         btnTotalPrice.addActionListener(e -> calculateTotalPrice());
@@ -79,7 +88,7 @@ public class BookManagement extends JFrame {
         loadBooksFromDatabase();
     }
 
-       private void loadBooksFromDatabase() {
+    private void loadBooksFromDatabase() {
         books = BookDatabase.getAllBooks(); // Lấy dữ liệu từ cơ sở dữ liệu
         updateTable();
     }
@@ -103,6 +112,7 @@ public class BookManagement extends JFrame {
 
     public void updateBook(Book book) {
         BookDatabase.updateBookInDatabase(book); // Phương thức cập nhật trong BookDatabase
+        loadBooksFromDatabase(); // Tải lại dữ liệu sau khi cập nhật
     }
     
     public ArrayList<Book> getBooks() {
@@ -112,31 +122,10 @@ public class BookManagement extends JFrame {
     public void addBook(Book book) {
         if (BookDatabase.insertBook(book)) {
             books.add(book);
-            Object[] rowData = {
-                book.getId(),
-                book.getDateImported(),
-                book.getPublisher(),
-                book.getType(),
-                book.getUnitPrice(),
-                book.getQuantity(),
-                book.getStatus(),
-                book.getTax()
-            };
-            tableModel.addRow(rowData);
+            loadBooksFromDatabase(); // Tải lại dữ liệu sau khi thêm
             JOptionPane.showMessageDialog(this, "Đã thêm sách vào cơ sở dữ liệu thành công.");
         } else {
             JOptionPane.showMessageDialog(this, "Không thể thêm sách vào cơ sở dữ liệu.");
-        }
-    }
-
-    public void deleteBook() {
-        int selectedRow = bookTable.getSelectedRow();
-        if (selectedRow >= 0) {
-            int bookId = (int) tableModel.getValueAt(selectedRow, 0);
-            books.removeIf(book -> book.getId() == bookId);
-            tableModel.removeRow(selectedRow);
-        } else {
-            JOptionPane.showMessageDialog(this, "Vui lòng chọn một sách để xóa.");
         }
     }
     
@@ -144,19 +133,13 @@ public class BookManagement extends JFrame {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'SearchBookFrame'");
     }
-
-    // public void addBook(Book book) {
-    //     books.add(book);
-    // }
     
     public boolean deleteBook(int id) {
-        for (Book book : books) {
-            if (book.getId() == id) { // Sử dụng thuộc tính id để tìm sách
-                books.remove(book);
-                return true; // Đã xóa thành công
-            }
+        if (BookDatabase.deleteBook(id)) {
+            loadBooksFromDatabase(); // Tải lại dữ liệu sau khi xóa
+            return true;
         }
-        return false; // Không tìm thấy sách
+        return false;
     }
 
     private void printBooks() {

@@ -25,7 +25,7 @@ public class DeleteBookFrame extends JFrame {
         btnDelete.addActionListener(e -> {
             try {
                 int id = Integer.parseInt(txtId.getText());
-                boolean deleted = bookManagement.deleteBook(id);
+                boolean deleted = bookManagement.deleteBook(id); // Gọi phương thức deleteBook từ BookManagement
                 if (deleted) {
                     JOptionPane.showMessageDialog(this, "Đã xóa sách thành công.");
                 } else {

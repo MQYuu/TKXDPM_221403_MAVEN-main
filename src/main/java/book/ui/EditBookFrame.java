@@ -47,7 +47,7 @@ public class EditBookFrame extends JFrame {
                     }
 
                     // Cập nhật sách trong cơ sở dữ liệu
-                    bookManagement.updateBook(bookToEdit); // Giả sử bạn đã tạo phương thức này trong BookManagement
+                    bookManagement.updateBook(bookToEdit); // phương thức này trong BookManagement
 
                     JOptionPane.showMessageDialog(this, "Đã sửa sách thành công.");
                     dispose();

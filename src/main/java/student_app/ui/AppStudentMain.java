@@ -10,6 +10,7 @@ public class AppStudentMain {
 
         StudentDetailsForm studentDetailsForm = new StudentDetailsForm(getMockStudent());
         
+        
     }
 
     private static AddStudentOutputDTO getMockStudent(){

@@ -10,6 +10,7 @@ public class BookDatabase {
     private static final String JDBC_USERNAME = "root";
     private static final String JDBC_PASSWORD = "12345678";
 
+    // Fetch all books from the database
     public static ArrayList<Book> getAllBooks() {
         ArrayList<Book> books = new ArrayList<>();
         String query = "SELECT * FROM books";
@@ -19,103 +20,66 @@ public class BookDatabase {
              ResultSet rs = stmt.executeQuery(query)) {
 
             while (rs.next()) {
-                int id = rs.getInt("id");
-                String publisher = rs.getString("publisher");
-                String type = rs.getString("type");
-                double unitPrice = rs.getDouble("unit_price");
-                int quantity = rs.getInt("quantity");
-                Date dateImported = rs.getDate("date_imported");
-                String status = rs.getString("status");
-                double tax = rs.getDouble("tax");
-
-                Book book = new Book(id, publisher, type, unitPrice, quantity, dateImported, status, tax);
-                books.add(book);
+                books.add(extractBookFromResultSet(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logSQLException(e);
         }
-
         return books;
     }
 
+    // Insert a new book into the database
     public static boolean insertBook(Book book) {
         String query = "INSERT INTO books (id, publisher, type, unit_price, quantity, date_imported, status, tax) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
-            pstmt.setInt(1, book.getId());
-            pstmt.setString(2, book.getPublisher());
-            pstmt.setString(3, book.getType());
-            pstmt.setDouble(4, book.getUnitPrice());
-            pstmt.setInt(5, book.getQuantity());
-            pstmt.setDate(6, new java.sql.Date(book.getDateImported().getTime()));
-            pstmt.setString(7, book.getStatus());
-            pstmt.setDouble(8, book.getTax());
+            setBookPreparedStatement(pstmt, book);
+            pstmt.setInt(1, book.getId()); // Set ID separately as it doesn't change
 
-            int rowsInserted = pstmt.executeUpdate();
-            return rowsInserted > 0;
-
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            logSQLException(e);
             return false;
         }
     }
 
+    // Update an existing book in the database
     public static void updateBookInDatabase(Book book) {
         String query = "UPDATE books SET publisher = ?, type = ?, unit_price = ?, quantity = ?, date_imported = ?, status = ?, tax = ? WHERE id = ?";
-        
+
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            // Cập nhật các trường thông tin
-            pstmt.setString(1, book.getPublisher());
-            pstmt.setString(2, book.getType());
-            pstmt.setDouble(3, book.getUnitPrice());
-            pstmt.setInt(4, book.getQuantity());
-            pstmt.setDate(5, new java.sql.Date(book.getDateImported().getTime())); // Chuyển đổi sang java.sql.Date
-    
-            // Cập nhật trạng thái và thuế tùy theo loại sách
-            if (book.getType().equals("Giáo Khoa")) {
-                pstmt.setString(6, book.getStatus()); // Nếu là sách giáo khoa, cập nhật trạng thái
-                pstmt.setDouble(7, 0); // Đặt thuế về 0 vì không áp dụng cho sách giáo khoa
-            } else if (book.getType().equals("Tham Khảo")) {
-                pstmt.setString(6, null); // Đặt trạng thái về null vì không áp dụng cho sách tham khảo
-                pstmt.setDouble(7, book.getTax()); // Cập nhật thuế cho sách tham khảo
-            }
-    
-            pstmt.setInt(8, book.getId()); // ID của sách cần cập nhật
-    
-            // Thực thi câu lệnh update
+
+            setBookPreparedStatement(pstmt, book);
+            pstmt.setInt(8, book.getId()); // Set ID for the WHERE clause
+
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logSQLException(e);
         }
     }
 
+    // Fetch a book by its ID
     public static Book getBookById(int id) {
         String query = "SELECT * FROM books WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
              PreparedStatement pstmt = conn.prepareStatement(query)) {
+
             pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                String publisher = rs.getString("publisher");
-                String type = rs.getString("type");
-                double unitPrice = rs.getDouble("unit_price");
-                int quantity = rs.getInt("quantity");
-                Date dateImported = rs.getDate("date_imported");
-                String status = rs.getString("status");
-                double tax = rs.getDouble("tax");
-    
-                return new Book(id, publisher, type, unitPrice, quantity, dateImported, status, tax);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return extractBookFromResultSet(rs);
+                }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            logSQLException(e);
         }
-        return null; // Không tìm thấy sách
+        return null;
     }
-    
+
+    // Delete a book by its ID
     public static boolean deleteBook(int id) {
         String query = "DELETE FROM books WHERE id = ?";
 
@@ -123,12 +87,47 @@ public class BookDatabase {
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, id);
-            int rowsDeleted = pstmt.executeUpdate();
-            return rowsDeleted > 0; // Trả về true nếu đã xóa thành công
-
+            return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
-            return false; // Trả về false nếu có lỗi xảy ra
+            logSQLException(e);
+            return false;
         }
+    }
+
+    // Helper method to extract a book object from a ResultSet
+    private static Book extractBookFromResultSet(ResultSet rs) throws SQLException {
+        int id = rs.getInt("id");
+        String publisher = rs.getString("publisher");
+        String type = rs.getString("type");
+        double unitPrice = rs.getDouble("unit_price");
+        int quantity = rs.getInt("quantity");
+        Date dateImported = rs.getDate("date_imported");
+        String status = rs.getString("status");
+        double tax = rs.getDouble("tax");
+
+        return new Book(id, publisher, type, unitPrice, quantity, dateImported, status, tax);
+    }
+
+    // Helper method to set PreparedStatement parameters from a Book object
+    private static void setBookPreparedStatement(PreparedStatement pstmt, Book book) throws SQLException {
+        pstmt.setString(1, book.getPublisher());
+        pstmt.setString(2, book.getType());
+        pstmt.setDouble(3, book.getUnitPrice());
+        pstmt.setInt(4, book.getQuantity());
+        pstmt.setDate(5, new java.sql.Date(book.getDateImported().getTime()));
+
+        if ("Giáo Khoa".equals(book.getType())) {
+            pstmt.setString(6, book.getStatus());
+            pstmt.setDouble(7, 0);
+        } else if ("Tham Khảo".equals(book.getType())) {
+            pstmt.setString(6, null);
+            pstmt.setDouble(7, book.getTax());
+        }
+    }
+
+    // Centralized error logging for SQLException
+    private static void logSQLException(SQLException e) {
+        System.err.println("SQL error occurred: " + e.getMessage());
+        e.printStackTrace();
     }
 }

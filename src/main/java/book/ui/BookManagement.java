@@ -70,7 +70,6 @@ public class BookManagement extends JFrame {
             new SearchBookFrame(books).setVisible(true); // Pass books to the SearchBookFrame for searching
         });
         
-        btnSearch.addActionListener(e -> SearchBookFrame(this).setVisible(true));
         btnPrint.addActionListener(e -> printBooks());
         btnTotalPrice.addActionListener(e -> calculateTotalPrice());
         btnAvgPrice.addActionListener(e -> calculateAveragePrice());

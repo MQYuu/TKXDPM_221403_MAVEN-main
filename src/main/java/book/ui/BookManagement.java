@@ -169,7 +169,7 @@ public class BookManagement extends JFrame {
     private void displayPublisherXBooks() {
         StringBuilder result = new StringBuilder();
         for (Book book : books) {
-            if (book.getType().equalsIgnoreCase("Giáo Khoa") && book.getPublisher().equalsIgnoreCase("NXB X")) {
+            if (book.getType().equalsIgnoreCase("Giáo Khoa") && book.getPublisher().equalsIgnoreCase("X")) {
                 result.append("ID: ").append(book.getId())
                     .append(", Ngày nhập: ").append(book.getDateImported())
                     .append(", Đơn giá: ").append(book.getUnitPrice())

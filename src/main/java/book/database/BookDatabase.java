@@ -10,12 +10,17 @@ public class BookDatabase {
     private static final String JDBC_USERNAME = "root";
     private static final String JDBC_PASSWORD = "12345678";
 
+    // Reusable method for obtaining a database connection
+    private static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+    }
+
     // Fetch all books from the database
     public static ArrayList<Book> getAllBooks() {
         ArrayList<Book> books = new ArrayList<>();
         String query = "SELECT * FROM books";
 
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+        try (Connection conn = getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(query)) {
 
@@ -32,13 +37,13 @@ public class BookDatabase {
     public static boolean insertBook(Book book) {
         String query = "INSERT INTO books (id, publisher, type, unit_price, quantity, date_imported, status, tax) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+        try (Connection conn = getConnection(); 
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             setBookPreparedStatement(pstmt, book);
-            pstmt.setInt(1, book.getId()); // Set ID separately as it doesn't change
+            pstmt.setInt(1, book.getId()); // Set ID separately, as it's a primary key
 
-            return pstmt.executeUpdate() > 0;
+            return pstmt.executeUpdate() > 0; // Returns true if the insert was successful
         } catch (SQLException e) {
             logSQLException(e);
             return false;
@@ -46,25 +51,27 @@ public class BookDatabase {
     }
 
     // Update an existing book in the database
-    public static void updateBookInDatabase(Book book) {
+    public static boolean updateBookInDatabase(Book book) {
         String query = "UPDATE books SET publisher = ?, type = ?, unit_price = ?, quantity = ?, date_imported = ?, status = ?, tax = ? WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             setBookPreparedStatement(pstmt, book);
             pstmt.setInt(8, book.getId()); // Set ID for the WHERE clause
 
-            pstmt.executeUpdate();
+            return pstmt.executeUpdate() > 0; // Return true if update was successful
         } catch (SQLException e) {
             logSQLException(e);
+            return false;
         }
     }
 
     // Fetch a book by its ID
     public static Book getBookById(int id) {
         String query = "SELECT * FROM books WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, id);
@@ -83,11 +90,11 @@ public class BookDatabase {
     public static boolean deleteBook(int id) {
         String query = "DELETE FROM books WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(JDBC_URL, JDBC_USERNAME, JDBC_PASSWORD);
+        try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
 
             pstmt.setInt(1, id);
-            return pstmt.executeUpdate() > 0;
+            return pstmt.executeUpdate() > 0; // Return true if the deletion was successful
         } catch (SQLException e) {
             logSQLException(e);
             return false;
@@ -110,18 +117,18 @@ public class BookDatabase {
 
     // Helper method to set PreparedStatement parameters from a Book object
     private static void setBookPreparedStatement(PreparedStatement pstmt, Book book) throws SQLException {
-        pstmt.setString(1, book.getPublisher());
-        pstmt.setString(2, book.getType());
-        pstmt.setDouble(3, book.getUnitPrice());
-        pstmt.setInt(4, book.getQuantity());
-        pstmt.setDate(5, new java.sql.Date(book.getDateImported().getTime()));
+        pstmt.setString(2, book.getPublisher());
+        pstmt.setString(3, book.getType());
+        pstmt.setDouble(4, book.getUnitPrice());
+        pstmt.setInt(5, book.getQuantity());
+        pstmt.setDate(6, new java.sql.Date(book.getDateImported().getTime()));
 
         if ("Giáo Khoa".equals(book.getType())) {
-            pstmt.setString(6, book.getStatus());
-            pstmt.setDouble(7, 0);
+            pstmt.setString(7, book.getStatus());
+            pstmt.setDouble(8, 0); // Tax is not applicable for educational books
         } else if ("Tham Khảo".equals(book.getType())) {
-            pstmt.setString(6, null);
-            pstmt.setDouble(7, book.getTax());
+            pstmt.setString(7, null); // No status for reference books
+            pstmt.setDouble(8, book.getTax()); // Tax for reference books
         }
     }
 

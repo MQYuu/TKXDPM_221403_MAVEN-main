@@ -40,11 +40,15 @@ public class AddBookFrame extends JFrame {
                 String status = type.equals("Giáo Khoa") ? txtStatus.getText() : "";
                 double tax = type.equals("Tham Khảo") ? Double.parseDouble(txtTax.getText()) : 0.0;
 
+                if (publisher.isEmpty() || unitPrice <= 0 || quantity <= 0 || dateImported == null) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng nhập đầy đủ thông tin hợp lệ.");
+                    return;
+                }
+
                 // Tạo đối tượng Book và thêm vào BookManagement
                 Book newBook = new Book(id, publisher, type, unitPrice, quantity, dateImported, status, tax);
                 bookManagement.addBook(newBook);
 
-                //JOptionPane.showMessageDialog(this, "Đã thêm sách thành công.");
                 dispose(); // Đóng form sau khi thêm sách
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Vui lòng nhập thông tin hợp lệ.");

@@ -64,7 +64,12 @@ public class BookManagement extends JFrame {
         btnDelete.addActionListener(e -> {
             new DeleteBookFrame(this).setVisible(true);
             loadBooksFromDatabase(); // Tải lại dữ liệu sau khi xóa
+        
         });
+        btnSearch.addActionListener(e -> {
+            new SearchBookFrame(books).setVisible(true); // Pass books to the SearchBookFrame for searching
+        });
+        
         btnSearch.addActionListener(e -> SearchBookFrame(this).setVisible(true));
         btnPrint.addActionListener(e -> printBooks());
         btnTotalPrice.addActionListener(e -> calculateTotalPrice());
